@@ -61,7 +61,26 @@ int printf(const char* restrict format, ...) {
 			if (!print(str, len))
 				return -1;
 			written += len;
-		} else {
+		} else if (*format == 'u') {
+      format++;
+      unsigned int value = va_arg(parameters, unsigned int);
+      char str[10];
+      int i = 9;
+      do {
+        unsigned int digit = value % 10;
+        str[i] = '0' + digit;
+        value = value / 10;
+        i--;
+      } while (value > 0);
+      size_t len = 9 - i;
+      if (maxrem < len) {
+				// TODO: Set errno to EOVERFLOW.
+        return -1;
+      }
+      if (!print(str+i+1, len))
+        return -1;
+      written += len;
+    } else {
 			format = format_begun_at;
 			size_t len = strlen(format);
 			if (maxrem < len) {
