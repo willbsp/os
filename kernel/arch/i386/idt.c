@@ -59,7 +59,8 @@ extern void isr47(void);
 struct idt_entry idt[256];
 struct idt_table itable;
 
-void idt_set_gate(uint8_t entry_no, uint32_t offset, uint16_t selector, uint8_t type_attributes) {
+void idt_set_gate(uint8_t entry_no, uint32_t offset, uint16_t selector,
+                  uint8_t type_attributes) {
   idt[entry_no].offset_low = offset & (0xFFFF);
   idt[entry_no].offset_high = (offset >> 16) & (0xFFFF);
   idt[entry_no].selector = selector;
@@ -133,7 +134,7 @@ void isr_handler(struct registers *regs) {
     pic_send_eoi(irq);
     if (irq == 0) {
       // timer tick
-      //printf("tick");
+      // printf("tick");
     } else if (irq == 1) {
       // keyboard
       uint8_t scancode = inb(0x60);
@@ -145,5 +146,6 @@ void isr_handler(struct registers *regs) {
 
   printf("Exception: %u\n", regs->int_no);
   printf("EIP: %u\n", regs->eip);
-  for (;;) asm volatile("hlt");
+  for (;;)
+    asm volatile("hlt");
 }

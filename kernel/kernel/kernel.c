@@ -1,15 +1,15 @@
 #include <stdio.h>
 
-#include <kernel/tty.h>
-#include <kernel/serial.h>
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
 #include <kernel/pic.h>
+#include <kernel/serial.h>
+#include <kernel/tty.h>
 
 void kernel_main(void) {
   init_serial_port();
-	terminal_initialize();
-	printf("Loading..\n");
+  terminal_initialize();
+  printf("Loading..\n");
 
   gdt_install();
   printf("GDT loaded.\n");
@@ -24,5 +24,6 @@ void kernel_main(void) {
   asm volatile("sti");
   printf("Enabled interrupts\n");
 
-  for (;;) asm volatile("hlt");
+  for (;;)
+    asm volatile("hlt");
 }
