@@ -3,6 +3,9 @@
 #include <string.h>
 
 #include <kernel/idt.h>
+#include <kernel/pic.h>
+
+#include "io.h"
 
 extern void isr0(void);
 extern void isr1(void);
@@ -36,6 +39,22 @@ extern void isr28(void);
 extern void isr29(void);
 extern void isr30(void);
 extern void isr31(void);
+extern void isr32(void);
+extern void isr33(void);
+extern void isr34(void);
+extern void isr35(void);
+extern void isr36(void);
+extern void isr37(void);
+extern void isr38(void);
+extern void isr39(void);
+extern void isr40(void);
+extern void isr41(void);
+extern void isr42(void);
+extern void isr43(void);
+extern void isr44(void);
+extern void isr45(void);
+extern void isr46(void);
+extern void isr47(void);
 
 struct idt_entry idt[256];
 struct idt_table itable;
@@ -87,11 +106,43 @@ void idt_install() {
   idt_set_gate(29, (uint32_t)isr29, 0x08, 0x8E);
   idt_set_gate(30, (uint32_t)isr30, 0x08, 0x8E);
   idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8E);
+  idt_set_gate(32, (uint32_t)isr32, 0x08, 0x8E);
+  idt_set_gate(33, (uint32_t)isr33, 0x08, 0x8E);
+  idt_set_gate(34, (uint32_t)isr34, 0x08, 0x8E);
+  idt_set_gate(35, (uint32_t)isr35, 0x08, 0x8E);
+  idt_set_gate(36, (uint32_t)isr36, 0x08, 0x8E);
+  idt_set_gate(37, (uint32_t)isr37, 0x08, 0x8E);
+  idt_set_gate(38, (uint32_t)isr38, 0x08, 0x8E);
+  idt_set_gate(39, (uint32_t)isr39, 0x08, 0x8E);
+  idt_set_gate(40, (uint32_t)isr40, 0x08, 0x8E);
+  idt_set_gate(41, (uint32_t)isr41, 0x08, 0x8E);
+  idt_set_gate(42, (uint32_t)isr42, 0x08, 0x8E);
+  idt_set_gate(43, (uint32_t)isr43, 0x08, 0x8E);
+  idt_set_gate(44, (uint32_t)isr44, 0x08, 0x8E);
+  idt_set_gate(45, (uint32_t)isr45, 0x08, 0x8E);
+  idt_set_gate(46, (uint32_t)isr46, 0x08, 0x8E);
+  idt_set_gate(47, (uint32_t)isr47, 0x08, 0x8E);
 
   asm volatile("lidt %0" : : "m"(itable));
 }
 
 void isr_handler(struct registers *regs) {
+  if (regs->int_no >= 32) {
+    // get irq number
+    uint8_t irq = regs->int_no - 32;
+    pic_send_eoi(irq);
+    if (irq == 0) {
+      // timer tick
+      //printf("tick");
+    } else if (irq == 1) {
+      // keyboard
+      uint8_t scancode = inb(0x60);
+      printf("key: %u\n", scancode / 10);
+    }
+
+    return; // do not halt on IRQ
+  }
+
   printf("Exception: %u\n", regs->int_no);
   printf("EIP: %u\n", regs->eip);
   for (;;) asm volatile("hlt");

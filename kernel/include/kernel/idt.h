@@ -1,5 +1,5 @@
-#ifndef ARCH_I386_IDT_H
-#define ARCH_I386_IDT_H
+#ifndef _KERNEL_IDT_H
+#define _KERNEL_IDT_H
 
 #include <stdint.h>
 
@@ -27,4 +27,4 @@ void idt_set_gate(uint8_t entry_no, uint32_t offset, uint16_t selector, uint8_t 
 void idt_install(void);
 void isr_handler(struct registers *regs);
 
-#endif // !ARCH_I386_IDT_H
+#endif // !_KERNEL_IDT_H

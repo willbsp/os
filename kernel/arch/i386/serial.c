@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "io.h"
+
 #define COM1_PORT 0x3F8
 #define SERIAL_DATA          0
 #define SERIAL_INTERRUPT_EN  1
@@ -9,21 +11,6 @@
 #define SERIAL_LINE_CTRL     3
 #define SERIAL_MODEM_CTRL    4
 #define SERIAL_LINE_STATUS   5
-
-static inline void outb(uint16_t port, uint8_t val)
-{
-    __asm__ volatile ( "outb %b0, %w1" : : "a"(val), "Nd"(port) : "memory");
-}
-
-static inline uint8_t inb(uint16_t port)
-{
-    uint8_t ret;
-    __asm__ volatile ( "inb %w1, %b0"
-                   : "=a"(ret)
-                   : "Nd"(port)
-                   : "memory");
-    return ret;
-}
 
 void init_serial_port() {
   // disable interrupts

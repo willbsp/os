@@ -225,3 +225,99 @@ isr31:
   push $0
   push $31
   jmp isr_common
+
+.global isr32
+isr32:
+  push $0
+  push $32
+  jmp isr_common
+
+.global isr33
+isr33:
+  push $0
+  push $33
+  jmp isr_common
+
+.global isr34
+isr34:
+  push $0
+  push $34
+  jmp isr_common
+
+.global isr35
+isr35:
+  push $0
+  push $35
+  jmp isr_common
+
+.global isr36
+isr36:
+  push $0
+  push $36
+  jmp isr_common
+
+.global isr37
+isr37:
+  push $0
+  push $37
+  jmp isr_common
+
+.global isr38
+isr38:
+  push $0
+  push $38
+  jmp isr_common
+
+.global isr39
+isr39:
+  push $0
+  push $39
+  jmp isr_common
+
+.global isr40
+isr40:
+  push $0
+  push $40
+  jmp isr_common
+
+.global isr41
+isr41:
+  push $0
+  push $41
+  jmp isr_common
+
+.global isr42
+isr42:
+  push $0
+  push $42
+  jmp isr_common
+
+.global isr43
+isr43:
+  push $0
+  push $43
+  jmp isr_common
+
+.global isr44
+isr44:
+  push $0
+  push $44
+  jmp isr_common
+
+.global isr45
+isr45:
+  push $0
+  push $45
+  jmp isr_common
+
+.global isr46
+isr46:
+  push $0
+  push $46
+  jmp isr_common
+
+.global isr47
+isr47:
+  push $0
+  push $47
+  jmp isr_common

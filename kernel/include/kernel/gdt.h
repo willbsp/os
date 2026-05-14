@@ -1,5 +1,5 @@
-#ifndef ARCH_I386_GDT_H
-#define ARCH_I386_GDT_H
+#ifndef _KERNEL_GDT_H
+#define _KERNEL_GDT_H
 
 #include <stdint.h>
 
@@ -21,4 +21,4 @@ void gdt_set_gate(uint8_t entry_no, uint32_t base, uint32_t limit, uint8_t acces
 
 void gdt_install();
 
-#endif // ! ARCH_I386_GDT_H
+#endif // ! _KERNEL_GDT_H

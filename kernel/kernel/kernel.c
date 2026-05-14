@@ -4,6 +4,7 @@
 #include <kernel/serial.h>
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
+#include <kernel/pic.h>
 
 void kernel_main(void) {
   init_serial_port();
@@ -15,4 +16,13 @@ void kernel_main(void) {
 
   idt_install();
   printf("IDT loaded.\n");
+
+  pic_initialize();
+  printf("PIC initialized.\n");
+
+  // enable interrupts
+  asm volatile("sti");
+  printf("Enabled interrupts\n");
+
+  for (;;) asm volatile("hlt");
 }
