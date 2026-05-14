@@ -23,7 +23,9 @@ struct registers {
   uint32_t eip, cs, eflags;
 };
 
-void idt_set_gate(uint8_t entry_no, uint32_t offset, uint16_t selector,
+void idt_set_gate(uint8_t entry_no,
+                  uint32_t offset,
+                  uint16_t selector,
                   uint8_t type_attributes);
 void idt_install(void);
 void isr_handler(struct registers *regs);

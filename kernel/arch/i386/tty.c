@@ -1,9 +1,5 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
-
 #include <kernel/tty.h>
+#include <string.h>
 
 #include "vga.h"
 
@@ -29,7 +25,9 @@ void terminal_initialize(void) {
   }
 }
 
-void terminal_setcolor(uint8_t color) { terminal_color = color; }
+void terminal_setcolor(uint8_t color) {
+  terminal_color = color;
+}
 
 void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
   const size_t index = y * VGA_WIDTH + x;
@@ -46,14 +44,16 @@ void terminal_putchar(char c) {
   terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);
   if (++terminal_column == VGA_WIDTH) {
     terminal_column = 0;
-    if (++terminal_row == VGA_HEIGHT)
+    if (++terminal_row == VGA_HEIGHT) {
       terminal_row = 0;
+    }
   }
 }
 
 void terminal_write(const char *data, size_t size) {
-  for (size_t i = 0; i < size; i++)
+  for (size_t i = 0; i < size; i++) {
     terminal_putchar(data[i]);
+  }
 }
 
 void terminal_writestring(const char *data) {

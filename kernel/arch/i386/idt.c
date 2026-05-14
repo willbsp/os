@@ -1,9 +1,7 @@
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-
 #include <kernel/idt.h>
 #include <kernel/pic.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "io.h"
 
@@ -59,7 +57,9 @@ extern void isr47(void);
 struct idt_entry idt[256];
 struct idt_table itable;
 
-void idt_set_gate(uint8_t entry_no, uint32_t offset, uint16_t selector,
+void idt_set_gate(uint8_t entry_no,
+                  uint32_t offset,
+                  uint16_t selector,
                   uint8_t type_attributes) {
   idt[entry_no].offset_low = offset & (0xFFFF);
   idt[entry_no].offset_high = (offset >> 16) & (0xFFFF);
@@ -146,6 +146,7 @@ void isr_handler(struct registers *regs) {
 
   printf("Exception: %u\n", regs->int_no);
   printf("EIP: %u\n", regs->eip);
-  for (;;)
+  for (;;) {
     asm volatile("hlt");
+  }
 }

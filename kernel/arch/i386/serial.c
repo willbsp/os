@@ -4,13 +4,13 @@
 
 #include "io.h"
 
-#define COM1_PORT 0x3F8
-#define SERIAL_DATA 0
+#define COM1_PORT           0x3F8
+#define SERIAL_DATA         0
 #define SERIAL_INTERRUPT_EN 1
-#define SERIAL_FIFO_CTRL 2
-#define SERIAL_LINE_CTRL 3
-#define SERIAL_MODEM_CTRL 4
-#define SERIAL_LINE_STATUS 5
+#define SERIAL_FIFO_CTRL    2
+#define SERIAL_LINE_CTRL    3
+#define SERIAL_MODEM_CTRL   4
+#define SERIAL_LINE_STATUS  5
 
 void init_serial_port() {
   // disable interrupts
@@ -37,4 +37,6 @@ void serial_write(const char *data, size_t len) {
   }
 }
 
-void serial_writestring(const char *data) { serial_write(data, strlen(data)); }
+void serial_writestring(const char *data) {
+  serial_write(data, strlen(data));
+}

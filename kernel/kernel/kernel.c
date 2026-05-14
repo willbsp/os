@@ -1,10 +1,9 @@
-#include <stdio.h>
-
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
 #include <kernel/pic.h>
 #include <kernel/serial.h>
 #include <kernel/tty.h>
+#include <stdio.h>
 
 void kernel_main(void) {
   init_serial_port();
@@ -24,6 +23,7 @@ void kernel_main(void) {
   asm volatile("sti");
   printf("Enabled interrupts\n");
 
-  for (;;)
+  for (;;) {
     asm volatile("hlt");
+  }
 }
