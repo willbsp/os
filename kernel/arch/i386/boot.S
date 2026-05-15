@@ -26,10 +26,17 @@ stack_top:
 _start:
 	movl $stack_top, %esp
 
+  # move eax and ebx (multiboot info) to edi and esi
+  # as _init will clobber those registers
+  movl %eax, %edi
+  movl %ebx, %esi
+
 	# Call the global constructors.
 	call _init
 
 	# Transfer control to the main kernel.
+  push %esi # Multiboot info structure pointer (arg 2)
+  push %edi # Multiboot magic number (arg 1)
 	call kernel_main
 
 	# Hang if kernel_main unexpectedly returns.
