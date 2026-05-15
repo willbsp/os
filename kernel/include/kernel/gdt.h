@@ -17,12 +17,6 @@ struct __attribute__((__packed__)) gdt_table {
   uint32_t base;
 };
 
-void gdt_set_gate(uint8_t entry_no,
-                  uint32_t base,
-                  uint32_t limit,
-                  uint8_t access,
-                  uint8_t granularity);
-
 void gdt_install();
 
 #endif // ! _KERNEL_GDT_H

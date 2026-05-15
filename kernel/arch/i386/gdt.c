@@ -1,17 +1,16 @@
 #include <kernel/gdt.h>
 #include <stdint.h>
-#include <stdio.h>
 
 extern void gdt_flush(uint32_t);
 
-struct gdt_entry gdt[3];
-struct gdt_table table;
+static struct gdt_entry gdt[3];
+static struct gdt_table table;
 
-void gdt_set_gate(uint8_t entry_no,
-                  uint32_t base,
-                  uint32_t limit,
-                  uint8_t access,
-                  uint8_t granularity) {
+static void gdt_set_gate(uint8_t entry_no,
+                         uint32_t base,
+                         uint32_t limit,
+                         uint8_t access,
+                         uint8_t granularity) {
   gdt[entry_no].limit_low = limit & (0xFFFF);
   gdt[entry_no].base_low = base & (0xFFFF);
   gdt[entry_no].base_middle = (base >> 16) & (0xFF);

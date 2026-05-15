@@ -10,16 +10,16 @@
 extern uint32_t _kernel_start;
 extern uint32_t _kernel_end;
 
-uint8_t mem_bitmap[BITMAP_SIZE];
-uint32_t last_alloc_byte_index;
+static uint8_t mem_bitmap[BITMAP_SIZE];
+static uint32_t last_alloc_byte_index;
 
-void bitmap_clear(uint32_t frame_no) {
+static void bitmap_clear(uint32_t frame_no) {
   int32_t byte_index = frame_no / 8;
   int32_t bit_index = frame_no % 8;
   mem_bitmap[byte_index] &= ~(0x01 << bit_index);
 }
 
-void bitmap_set(uint32_t frame_no) {
+static void bitmap_set(uint32_t frame_no) {
   int32_t byte_index = frame_no / 8;
   int32_t bit_index = frame_no % 8;
   mem_bitmap[byte_index] |= (0x01 << bit_index);
