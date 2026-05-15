@@ -11,6 +11,7 @@ extern uint32_t _kernel_start;
 extern uint32_t _kernel_end;
 
 uint8_t mem_bitmap[BITMAP_SIZE];
+uint32_t last_alloc_byte_index;
 
 void bitmap_clear(uint32_t frame_no) {
   int32_t byte_index = frame_no / 8;
@@ -66,7 +67,9 @@ void pmm_init(struct multiboot_info *info) {
 }
 
 uint32_t pmm_alloc() {
-  for (uint32_t byte_index = 0; byte_index < BITMAP_SIZE; byte_index++) {
+  for (uint32_t i = 0; i < BITMAP_SIZE; i++) {
+    // start at last allocatd, % handles the wraparound at the end of the bitmap
+    uint32_t byte_index = (last_alloc_byte_index + i) % BITMAP_SIZE;
     uint8_t byte = mem_bitmap[byte_index];
     if (byte == 0xFF) {
       // the byte is 11111111 so no free bits
@@ -77,6 +80,7 @@ uint32_t pmm_alloc() {
       if (!used) {
         uint32_t frame_no = (byte_index * 8) + bit_index;
         bitmap_set(frame_no);
+        last_alloc_byte_index = byte_index;
         return frame_no * FRAME_SIZE;
       }
     }
