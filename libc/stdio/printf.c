@@ -1,6 +1,7 @@
 #include <limits.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -65,6 +66,30 @@ int printf(const char *restrict format, ...) {
         return -1;
       }
       if (!print(str, len)) {
+        return -1;
+      }
+      written += len;
+    } else if (*format == 'x') {
+      format++;
+      unsigned int value = va_arg(parameters, unsigned int);
+      char str[8];
+      int i = 7;
+      do {
+        unsigned int digit = value % 16;
+        if (digit > 9) {
+          str[i] = 'a' + digit - 10;
+        } else {
+          str[i] = '0' + digit;
+        }
+        value = value / 16;
+        i--;
+      } while (value > 0);
+      size_t len = 7 - i;
+      if (maxrem < len) {
+        // TODO: Set errno to EOVERFLOW.
+        return -1;
+      }
+      if (!print(str + i + 1, len)) {
         return -1;
       }
       written += len;
