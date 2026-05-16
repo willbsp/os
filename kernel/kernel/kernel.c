@@ -1,4 +1,5 @@
 #include <kernel/gdt.h>
+#include <kernel/heap.h>
 #include <kernel/idt.h>
 #include <kernel/multiboot.h>
 #include <kernel/paging.h>
@@ -44,6 +45,9 @@ void kernel_main(uint32_t magic, struct multiboot_info *info) {
 
   paging_init();
   printf("Paging enabled.\n");
+
+  heap_init();
+  printf("Heap initialized.\n");
 
   for (;;) {
     asm volatile("hlt");
