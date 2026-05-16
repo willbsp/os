@@ -16,18 +16,6 @@ struct __attribute__((__packed__)) idt_table {
   uint32_t base;
 };
 
-struct registers {
-  uint32_t ds;
-  uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-  uint32_t int_no, err_code;
-  uint32_t eip, cs, eflags;
-};
-
-void idt_set_gate(uint8_t entry_no,
-                  uint32_t offset,
-                  uint16_t selector,
-                  uint8_t type_attributes);
 void idt_install(void);
-void isr_handler(struct registers *regs);
 
 #endif // !_KERNEL_IDT_H

@@ -1,9 +1,6 @@
 #include <kernel/idt.h>
 #include <kernel/pic.h>
-#include <stdio.h>
 #include <string.h>
-
-#include "io.h"
 
 extern void isr0(void);
 extern void isr1(void);
@@ -57,10 +54,10 @@ extern void isr47(void);
 struct idt_entry idt[256];
 struct idt_table itable;
 
-void idt_set_gate(uint8_t entry_no,
-                  uint32_t offset,
-                  uint16_t selector,
-                  uint8_t type_attributes) {
+static void idt_set_gate(uint8_t entry_no,
+                         uint32_t offset,
+                         uint16_t selector,
+                         uint8_t type_attributes) {
   idt[entry_no].offset_low = offset & (0xFFFF);
   idt[entry_no].offset_high = (offset >> 16) & (0xFFFF);
   idt[entry_no].selector = selector;
@@ -125,28 +122,4 @@ void idt_install() {
   idt_set_gate(47, (uint32_t)isr47, 0x08, 0x8E);
 
   asm volatile("lidt %0" : : "m"(itable));
-}
-
-void isr_handler(struct registers *regs) {
-  if (regs->int_no >= 32) {
-    // get irq number
-    uint8_t irq = regs->int_no - 32;
-    pic_send_eoi(irq);
-    if (irq == 0) {
-      // timer tick
-      // printf("tick");
-    } else if (irq == 1) {
-      // keyboard
-      uint8_t scancode = inb(0x60);
-      printf("key: %u\n", scancode / 10);
-    }
-
-    return; // do not halt on IRQ
-  }
-
-  printf("Exception: %u\n", regs->int_no);
-  printf("EIP: %u\n", regs->eip);
-  for (;;) {
-    asm volatile("hlt");
-  }
 }
