@@ -49,6 +49,8 @@ void kernel_main(uint32_t magic, struct multiboot_info *info) {
   heap_init();
   printf("Heap initialized.\n");
 
+  printf("\n---Welcome!---\n");
+
   for (;;) {
     asm volatile("hlt");
   }

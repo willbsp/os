@@ -1,7 +1,11 @@
 #include <kernel/tty.h>
 #include <string.h>
 
+#include "io.h"
 #include "vga.h"
+
+#define VGA_CMD  0x3D4
+#define VGA_DATA 0x3D5
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -11,6 +15,15 @@ static size_t terminal_row;
 static size_t terminal_column;
 static uint8_t terminal_color;
 static uint16_t *terminal_buffer;
+
+static void update_cursor(int x, int y) {
+  uint16_t pos = y * VGA_WIDTH + x;
+
+  outb(VGA_CMD, 0x0F);
+  outb(VGA_DATA, (uint8_t)(pos & 0xFF));
+  outb(VGA_CMD, 0x0E);
+  outb(VGA_DATA, (uint8_t)((pos >> 8) & 0xFF));
+}
 
 void terminal_initialize(void) {
   terminal_row = 0;
@@ -23,6 +36,7 @@ void terminal_initialize(void) {
       terminal_buffer[index] = vga_entry(' ', terminal_color);
     }
   }
+  update_cursor(0, 0);
 }
 
 void terminal_setcolor(uint8_t color) {
@@ -32,6 +46,7 @@ void terminal_setcolor(uint8_t color) {
 void terminal_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
   const size_t index = y * VGA_WIDTH + x;
   terminal_buffer[index] = vga_entry(c, color);
+  update_cursor(x + 1, y);
 }
 
 void terminal_putchar(char c) {
@@ -39,6 +54,7 @@ void terminal_putchar(char c) {
   if (c == '\n') {
     terminal_column = 0;
     terminal_row++;
+    update_cursor(terminal_column, terminal_row);
     return;
   }
   terminal_putentryat(uc, terminal_color, terminal_column, terminal_row);

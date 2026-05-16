@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "kernel/keyboard.h"
+
 #include "io.h"
 
 void isr_handler(struct registers *regs) {
@@ -14,9 +16,8 @@ void isr_handler(struct registers *regs) {
       // timer tick
       // printf("tick");
     } else if (irq == 1) {
-      // keyboard
       uint8_t scancode = inb(0x60);
-      printf("key: %u\n", scancode / 10);
+      keyboard_handler(scancode);
     }
 
     return; // do not halt on IRQ
