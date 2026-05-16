@@ -1,6 +1,7 @@
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
 #include <kernel/multiboot.h>
+#include <kernel/paging.h>
 #include <kernel/pic.h>
 #include <kernel/pmm.h>
 #include <kernel/serial.h>
@@ -39,7 +40,10 @@ void kernel_main(uint32_t magic, struct multiboot_info *info) {
 
   // enable interrupts
   asm volatile("sti");
-  printf("Enabled interrupts\n");
+  printf("Interrupts enabled.\n");
+
+  paging_init();
+  printf("Paging enabled.\n");
 
   for (;;) {
     asm volatile("hlt");
