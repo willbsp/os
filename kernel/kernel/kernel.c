@@ -6,9 +6,12 @@
 #include <kernel/pic.h>
 #include <kernel/pmm.h>
 #include <kernel/serial.h>
+#include <kernel/timer.h>
 #include <kernel/tty.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#define TIMER_INTERRUPT_HZ 100
 
 void kernel_main(uint32_t magic, struct multiboot_info *info) {
   init_serial_port();
@@ -29,6 +32,9 @@ void kernel_main(uint32_t magic, struct multiboot_info *info) {
 
   terminal_initialize();
   printf("Loading..\n");
+
+  timer_init(100);
+  printf("Initialized timer.\n");
 
   gdt_install();
   printf("GDT loaded.\n");
