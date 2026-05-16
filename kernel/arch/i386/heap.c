@@ -70,3 +70,16 @@ void kfree(void *ptr) {
       (struct block_header *)(ptr - sizeof(struct block_header));
   header->free = 1;
 }
+
+void heap_meminfo(uint32_t *total, uint32_t *used, uint32_t *free) {
+  struct block_header *ptr = head;
+  while (ptr != NULL) {
+    *total += ptr->size + sizeof(struct block_header);
+    if (ptr->free) {
+      *free += ptr->size;
+    } else {
+      *used += ptr->size;
+    }
+    ptr = ptr->next;
+  }
+}

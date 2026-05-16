@@ -12,6 +12,7 @@ extern uint32_t _kernel_end;
 
 static uint8_t mem_bitmap[BITMAP_SIZE];
 static uint32_t last_alloc_byte_index;
+static uint32_t max_frames = 0;
 
 static void bitmap_clear(uint32_t frame_no) {
   int32_t byte_index = frame_no / 8;
@@ -45,6 +46,13 @@ void pmm_init(struct multiboot_info *info) {
       printf(" | Mapped");
       uint32_t start_frame =
           (uint32_t)entry->addr / FRAME_SIZE; // 4kb per frame
+
+      uint32_t end_frame =
+          ((uint32_t)entry->addr + (uint32_t)entry->len) / FRAME_SIZE;
+      if (end_frame > max_frames) {
+        max_frames = end_frame;
+      }
+
       uint32_t no_frames = (uint32_t)entry->len / FRAME_SIZE;
       for (uint32_t frame = start_frame; frame < start_frame + no_frames;
            frame++) {
@@ -92,4 +100,21 @@ uint32_t pmm_alloc() {
 void pmm_free(uint32_t addr) {
   uint32_t frame_no = addr / FRAME_SIZE;
   bitmap_clear(frame_no);
+}
+
+void pmm_meminfo(uint32_t *used, uint32_t *free) {
+  *used = 0;
+  *free = 0;
+  for (uint32_t i = 0; i < max_frames / 8; i++) {
+    uint8_t byte = mem_bitmap[i];
+    for (int8_t bit_index = 7; bit_index >= 0; bit_index--) {
+      if ((byte >> bit_index) & 0x01) {
+        (*used)++;
+      } else {
+        (*free)++;
+      }
+    }
+  }
+  *used *= FRAME_SIZE;
+  *free *= FRAME_SIZE;
 }
