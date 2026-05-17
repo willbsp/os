@@ -60,11 +60,11 @@ void *kmalloc(uint32_t size) {
   uint32_t frame = pmm_alloc();
   ptr = (struct block_header *)frame;
   ptr->size = PAGE_SIZE - sizeof(struct block_header);
+  ptr->free = 0;
   ptr->next = NULL;
   last->next = ptr;
   split_block_if_required(ptr, size);
 
-  ptr->free = 0;
   return (void *)((uint32_t)ptr + sizeof(struct block_header));
 }
 
