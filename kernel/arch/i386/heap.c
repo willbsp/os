@@ -77,19 +77,12 @@ void kfree(void *ptr) {
 void heap_meminfo(uint32_t *total, uint32_t *used, uint32_t *free) {
   struct block_header *ptr = head;
   while (ptr != NULL) {
-    printf("\nHeap: Size %u Header %u Total %u\n",
-           ptr->size,
-           sizeof(struct block_header),
-           ptr->size + sizeof(struct block_header));
     *total += ptr->size + sizeof(struct block_header);
     if (ptr->free) {
-      printf("Heap: Free %u\n", ptr->size);
       *free += ptr->size;
     } else {
-      printf("Heap: Used %u\n", ptr->size);
       *used += ptr->size;
     }
     ptr = ptr->next;
-    printf("Heap: next\n\n");
   }
 }
