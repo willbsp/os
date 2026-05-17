@@ -1,6 +1,7 @@
 #include <kernel/heap.h>
 #include <kernel/pmm.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #define PAGE_SIZE 4096
@@ -22,6 +23,7 @@ void heap_init() {
 }
 
 void *kmalloc(uint32_t size) {
+  printf("Heap: Allocating %u\n", size);
   struct block_header *ptr = head;
   struct block_header *last = NULL;
   while (ptr != NULL) {
@@ -56,12 +58,33 @@ void *kmalloc(uint32_t size) {
 
   // no free block found, request more memory from
   // physical memory manager
+  /*  uint32_t frame = pmm_alloc();
+    ptr = (struct block_header *)frame;
+    ptr->size = PAGE_SIZE - sizeof(struct block_header);
+    ptr->free = 0;
+    ptr->next = NULL;
+    last->next = ptr;
+    return (void *)((uint32_t)ptr + sizeof(struct block_header));*/
+
   uint32_t frame = pmm_alloc();
   ptr = (struct block_header *)frame;
   ptr->size = PAGE_SIZE - sizeof(struct block_header);
-  ptr->free = 0;
   ptr->next = NULL;
   last->next = ptr;
+
+  // split if there's room
+  if (ptr->size > size + sizeof(struct block_header)) {
+    struct block_header *new_block =
+        (struct block_header *)((uint32_t)ptr + sizeof(struct block_header) +
+                                size);
+    new_block->size = ptr->size - size - sizeof(struct block_header);
+    new_block->free = 1;
+    new_block->next = ptr->next;
+    ptr->next = new_block;
+    ptr->size = size;
+  }
+
+  ptr->free = 0;
   return (void *)((uint32_t)ptr + sizeof(struct block_header));
 }
 
@@ -74,12 +97,19 @@ void kfree(void *ptr) {
 void heap_meminfo(uint32_t *total, uint32_t *used, uint32_t *free) {
   struct block_header *ptr = head;
   while (ptr != NULL) {
+    printf("\nHeap: Size %u Header %u Total %u\n",
+           ptr->size,
+           sizeof(struct block_header),
+           ptr->size + sizeof(struct block_header));
     *total += ptr->size + sizeof(struct block_header);
     if (ptr->free) {
+      printf("Heap: Free %u\n", ptr->size);
       *free += ptr->size;
     } else {
+      printf("Heap: Used %u\n", ptr->size);
       *used += ptr->size;
     }
     ptr = ptr->next;
+    printf("Heap: next\n\n");
   }
 }

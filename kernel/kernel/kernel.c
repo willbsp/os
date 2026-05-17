@@ -5,13 +5,44 @@
 #include <kernel/paging.h>
 #include <kernel/pic.h>
 #include <kernel/pmm.h>
+#include <kernel/scheduler.h>
 #include <kernel/serial.h>
 #include <kernel/timer.h>
 #include <kernel/tty.h>
 #include <stdint.h>
 #include <stdio.h>
 
+#include "kernel/thread.h"
+
 #define TIMER_INTERRUPT_HZ 100
+
+void thread_a() {
+  uint32_t last_tick = 0;
+  uint32_t tick_counter = 0;
+  for (;;) {
+    tick_counter += timer_get_ticks() - last_tick;
+    if (tick_counter > 100) {
+      printf("A");
+      tick_counter = 0;
+    }
+    last_tick = timer_get_ticks();
+    schedule(); // yield
+  }
+}
+
+void thread_b() {
+  uint32_t last_tick = 0;
+  uint32_t tick_counter = 0;
+  for (;;) {
+    tick_counter += timer_get_ticks() - last_tick;
+    if (tick_counter > 250) {
+      printf("B");
+      tick_counter = 0;
+    }
+    last_tick = timer_get_ticks();
+    schedule(); // yield
+  }
+}
 
 void kernel_main(uint32_t magic, struct multiboot_info *info) {
   init_serial_port();
@@ -45,17 +76,30 @@ void kernel_main(uint32_t magic, struct multiboot_info *info) {
   pic_initialize();
   printf("PIC initialized.\n");
 
-  // enable interrupts
-  asm volatile("sti");
-  printf("Interrupts enabled.\n");
-
   paging_init();
   printf("Paging enabled.\n");
 
   heap_init();
   printf("Heap initialized.\n");
 
+  threading_init();
+  struct tcb *a = thread_create(thread_a);
+  schedule_thread(a);
+
+  struct tcb *b = thread_create(thread_b);
+  schedule_thread(b);
+
+  // enable interrupts
+  asm volatile("sti");
+  printf("Interrupts enabled.\n");
+
+  schedule();
+
   printf("\n---Welcome!---\n");
+
+  for (;;) {
+    schedule();
+  }
 
   for (;;) {
     asm volatile("hlt");

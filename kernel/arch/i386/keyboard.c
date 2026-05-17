@@ -24,9 +24,9 @@ static void shell_execute(const char *cmd) {
   } else if (strcmp(cmd, "heapinfo") == 0) {
     uint32_t total = 0, used = 0, free = 0;
     heap_meminfo(&total, &used, &free);
-    printf("Total %uKB\n", total / 1024);
-    printf("Used %uKB\n", used / 1024);
-    printf("Free %uKB\n", free / 1024);
+    printf("Total %uB\n", total);
+    printf("Used %uB\n", used);
+    printf("Free %uB\n", free);
   } else {
     printf("Command not recognised.\n");
   }
