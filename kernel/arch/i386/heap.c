@@ -22,33 +22,34 @@ void heap_init() {
   head->next = NULL;
 }
 
+static void split_block_if_required(struct block_header *block, uint32_t size) {
+  // ensure subtraction will not underflow
+  if (block->size > size + sizeof(struct block_header)) {
+    // if the size remaining after allocating this block is greater than
+    // the size of a block header, split the block into two one of which
+    // we allocate now and the other is free for later allocation
+    uint32_t remaining = block->size - size - sizeof(struct block_header);
+    if (remaining > sizeof(struct block_header)) {
+      struct block_header *new_block =
+          (struct block_header *)((uint32_t)block +
+                                  sizeof(struct block_header) + size);
+      new_block->size = remaining;
+      new_block->free = 1;
+
+      new_block->next = block->next;
+      block->next = new_block;
+      block->size = size;
+    }
+  }
+}
+
 void *kmalloc(uint32_t size) {
   printf("Heap: Allocating %u\n", size);
   struct block_header *ptr = head;
   struct block_header *last = NULL;
   while (ptr != NULL) {
     if (ptr->free && ptr->size >= size) {
-
-      // ensure subtraction will not underflow
-      if (ptr->size > size + sizeof(struct block_header)) {
-
-        // if the size remaining after allocating this block is greater than
-        // the size of a block header, split the block into two one of which
-        // we allocate now and the other is free for later allocation
-        uint32_t remaining = ptr->size - size - sizeof(struct block_header);
-        if (remaining > sizeof(struct block_header)) {
-          struct block_header *new_block =
-              (struct block_header *)((uint32_t)ptr +
-                                      sizeof(struct block_header) + size);
-          new_block->size = remaining;
-          new_block->free = 1;
-
-          new_block->next = ptr->next;
-          ptr->next = new_block;
-          ptr->size = size;
-        }
-      }
-
+      split_block_if_required(ptr, size);
       ptr->free = 0;
       return (void *)((uint32_t)ptr + sizeof(struct block_header));
     }
@@ -61,22 +62,7 @@ void *kmalloc(uint32_t size) {
   ptr->size = PAGE_SIZE - sizeof(struct block_header);
   ptr->next = NULL;
   last->next = ptr;
-
-  // split if there's room
-  if (ptr->size > size + sizeof(struct block_header)) {
-    uint32_t remaining = ptr->size - size - sizeof(struct block_header);
-    if (remaining > sizeof(struct block_header)) {
-      struct block_header *new_block =
-          (struct block_header *)((uint32_t)ptr + sizeof(struct block_header) +
-                                  size);
-      new_block->size = remaining;
-      new_block->free = 1;
-
-      new_block->next = ptr->next;
-      ptr->next = new_block;
-      ptr->size = size;
-    }
-  }
+  split_block_if_required(ptr, size);
 
   ptr->free = 0;
   return (void *)((uint32_t)ptr + sizeof(struct block_header));

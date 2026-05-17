@@ -22,7 +22,7 @@ void thread_a() {
   for (;;) {
     tick_counter += timer_get_ticks() - last_tick;
     if (tick_counter > 100) {
-      printf("A");
+      printf("Thread A: A\n");
       tick_counter = 0;
     }
     last_tick = timer_get_ticks();
@@ -36,7 +36,7 @@ void thread_b() {
   for (;;) {
     tick_counter += timer_get_ticks() - last_tick;
     if (tick_counter > 250) {
-      printf("B");
+      printf("Thread B: B\n");
       tick_counter = 0;
     }
     last_tick = timer_get_ticks();
