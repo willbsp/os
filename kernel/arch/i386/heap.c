@@ -56,16 +56,6 @@ void *kmalloc(uint32_t size) {
     ptr = ptr->next;
   }
 
-  // no free block found, request more memory from
-  // physical memory manager
-  /*  uint32_t frame = pmm_alloc();
-    ptr = (struct block_header *)frame;
-    ptr->size = PAGE_SIZE - sizeof(struct block_header);
-    ptr->free = 0;
-    ptr->next = NULL;
-    last->next = ptr;
-    return (void *)((uint32_t)ptr + sizeof(struct block_header));*/
-
   uint32_t frame = pmm_alloc();
   ptr = (struct block_header *)frame;
   ptr->size = PAGE_SIZE - sizeof(struct block_header);
@@ -74,14 +64,18 @@ void *kmalloc(uint32_t size) {
 
   // split if there's room
   if (ptr->size > size + sizeof(struct block_header)) {
-    struct block_header *new_block =
-        (struct block_header *)((uint32_t)ptr + sizeof(struct block_header) +
-                                size);
-    new_block->size = ptr->size - size - sizeof(struct block_header);
-    new_block->free = 1;
-    new_block->next = ptr->next;
-    ptr->next = new_block;
-    ptr->size = size;
+    uint32_t remaining = ptr->size - size - sizeof(struct block_header);
+    if (remaining > sizeof(struct block_header)) {
+      struct block_header *new_block =
+          (struct block_header *)((uint32_t)ptr + sizeof(struct block_header) +
+                                  size);
+      new_block->size = remaining;
+      new_block->free = 1;
+
+      new_block->next = ptr->next;
+      ptr->next = new_block;
+      ptr->size = size;
+    }
   }
 
   ptr->free = 0;
