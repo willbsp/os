@@ -57,6 +57,8 @@ void *kmalloc(uint32_t size) {
     ptr = ptr->next;
   }
 
+  // no free block found, request a new
+  // frame from  the physical memory manager
   uint32_t frame = pmm_alloc();
   ptr = (struct block_header *)frame;
   ptr->size = PAGE_SIZE - sizeof(struct block_header);
