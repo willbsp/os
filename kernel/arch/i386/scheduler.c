@@ -9,11 +9,9 @@ static struct tcb *current_thread = NULL;
 void schedule() {
   // need to update current_thread first before context switch
   // as once it has run, will be on a different thread
-  // printf("schedule callledA");
   if (current_thread == NULL || current_thread->next == current_thread) {
     return;
   }
-  // printf("switching\n");
   struct tcb *previous_thread = current_thread;
   current_thread = current_thread->next;
   switch_context(previous_thread, current_thread);
