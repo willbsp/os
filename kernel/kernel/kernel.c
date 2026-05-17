@@ -93,8 +93,6 @@ void kernel_main(uint32_t magic, struct multiboot_info *info) {
   asm volatile("sti");
   printf("Interrupts enabled.\n");
 
-  schedule();
-
   printf("\n---Welcome!---\n");
 
   for (;;) {
