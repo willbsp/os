@@ -5,6 +5,6 @@
 
 void timer_init(uint32_t frequency);
 void timer_handler(void);
-void timer_get_ticks(void);
+int32_t timer_get_ticks(void);
 
 #endif // !_KERNEL_TIMER_H
